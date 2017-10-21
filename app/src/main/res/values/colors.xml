@@ -6,4 +6,6 @@
 
     <color name="primaryTextColor">#E5FFFF</color>
     <color name="searchTextColor">#00aced</color>
+    <color name="userDisplayNameColor">#65F5D8</color>
+    <color name="favoriteOrange">#F89E11</color>
 </resources>

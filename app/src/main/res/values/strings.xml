@@ -3,4 +3,7 @@
     <string name="appTitle">TwitterWise</string>
     <string name="get_wise">Get Wise</string>
     <string name="hashtagHint">#hashtag</string>
+    <string name="favorite_this_tweet">favorite this</string>
+
+    <string name="user_display_name">— %1$s</string>
 </resources>
