@@ -3,6 +3,7 @@ package wazizhen.twitterwise;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +23,8 @@ import java.util.regex.Pattern;
 import models.Tweet;
 
 public class ViewTweetActivity extends AppCompatActivity {
+
+    private Handler handler = new Handler();
 
     TextView tweetContent;
     TextView userDisplayName;
@@ -95,7 +98,21 @@ public class ViewTweetActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(!tweetFavorited) {
                     favoriteButton.setImageResource(R.drawable.favorited_icon_full);
-                    favoriteTweetText.setText(R.string.favorited);
+                    favoriteButton.animate().scaleY(1.12f).scaleX(1.12f).setDuration(300);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            favoriteButton.animate().scaleY(0.90f).scaleX(0.90f).setDuration(500);
+                        }
+                    }, 300);
+                    favoriteTweetText.animate().translationYBy(20f).alpha(0).setDuration(500);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            favoriteTweetText.setText(R.string.favorited); // don't change text until fully disappeared
+                            favoriteTweetText.animate().translationYBy(-20f).alpha(1f).setDuration(500);
+                        }
+                    }, 500);
                     SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.US);
                     // add Tweet to favorites data table
                     db.execSQL("INSERT INTO favorites (id, content, userDisplayName, userName, date) VALUES " +
@@ -107,7 +124,27 @@ public class ViewTweetActivity extends AppCompatActivity {
                     tweetFavorited = true;
                 } else {
                     favoriteButton.setImageResource(R.drawable.favorited_icon_empty);
-                    favoriteTweetText.setText(R.string.tweet_removed);
+                    favoriteTweetText.animate().translationYBy(20f).alpha(0).setDuration(500);
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            favoriteTweetText.setText(R.string.tweet_removed);
+                            favoriteTweetText.animate().translationYBy(-20f).alpha(1f).setDuration(500);
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    favoriteTweetText.animate().alpha(0).setDuration(1000);
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            favoriteTweetText.setText(R.string.favorite_this);
+                                            favoriteTweetText.animate().alpha(1f).setDuration(1500);
+                                        }
+                                    }, 2000);
+                                }
+                            }, 2000);
+                        }
+                    }, 500);
                     // delete Tweet from favorites data table
                     db.execSQL("DELETE FROM favorites WHERE id = " + tweet.getId());
                     tweetFavorited = false;
