@@ -6,4 +6,7 @@
     <string name="favorite_this_tweet">favorite this</string>
 
     <string name="user_display_name">— %1$s</string>
+    <string name="favorite_this">favorite this</string>
+    <string name="favorited">favorited!</string>
+    <string name="tweet_removed">tweet removed</string>
 </resources>
