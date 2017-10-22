@@ -3,13 +3,16 @@ package wazizhen.twitterwise;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -31,6 +34,7 @@ public class ViewTweetActivity extends AppCompatActivity {
     TextView tweetDate;
     ImageButton favoriteButton;
     TextView favoriteTweetText;
+    ImageView profilePic;
 
     boolean tweetFavorited;
 
@@ -38,6 +42,14 @@ public class ViewTweetActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_tweet);
+
+        profilePic = (ImageView) findViewById(R.id.profilePic);
+
+        Bundle bundle = getIntent().getExtras();
+        String searchQuery = bundle.getString("query"); // hashtag user is has searched for
+        final Tweet tweet = findTweet(searchQuery); // get Tweet to display
+
+        // Picasso.with(getApplicationContext()).load(profileImgURL).into(profilePic);
 
         // init or retrieve favorites database
         final SQLiteDatabase db = this.openOrCreateDatabase("Tweets", MODE_PRIVATE, null);
@@ -55,11 +67,6 @@ public class ViewTweetActivity extends AppCompatActivity {
         favoriteTweetText = (TextView) findViewById(R.id.favoriteTweetText);
         favoriteTweetText.setTypeface(signika);
 
-        Bundle bundle = getIntent().getExtras();
-        String searchQuery = bundle.getString("query"); // hashtag user is has searched for
-
-
-        final Tweet tweet = findTweet(searchQuery);
         tweetContent.setText("\"" + tweet.getContent().replaceAll("\\<.*?>","") + "\"");
         userDisplayName.setText(getResources().getString(R.string.user_display_name, tweet.getUserDisplayName()));
         SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.US);
