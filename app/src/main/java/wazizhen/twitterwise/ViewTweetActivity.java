@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -40,6 +40,8 @@ public class ViewTweetActivity extends AppCompatActivity {
 
     boolean tweetFavorited;
 
+    DatabaseHelper dbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,9 +55,8 @@ public class ViewTweetActivity extends AppCompatActivity {
 
         // Picasso.with(getApplicationContext()).load(profileImgURL).into(profilePic);
 
-        // init or retrieve favorites database
-        final SQLiteDatabase db = this.openOrCreateDatabase("Tweets", MODE_PRIVATE, null);
-        db.execSQL("CREATE TABLE IF NOT EXISTS favorites (id BIGINT, content VARCHAR(255), userDisplayName VARCHAR(255), userName VARCHAR(255), date TEXT)");
+        // retrieve favorites database through helper
+        dbHelper = DatabaseHelper.getInstance(this);
 
         // establish view elements, set font
         Typeface signika = Typeface.createFromAsset(getAssets(), "fonts/SignikaNegative.ttf");
@@ -74,8 +75,9 @@ public class ViewTweetActivity extends AppCompatActivity {
         userDisplayName.setText(getResources().getString(R.string.user_display_name, tweet.getUserDisplayName()));
         SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.US);
         tweetDate.setText(format.format(tweet.getDate()));
+
         // check db for this Tweet in favorites, set favoriteButton image & text accordingly
-        tweetFavorited = tweetIsFavorited(db, tweet.getId());
+        tweetFavorited = dbHelper.hasTweet(tweet.getId());
         if(tweetFavorited) {
             favoriteButton.setImageResource(R.drawable.favorited_icon_full);
             favoriteTweetText.setText(R.string.favorited);
@@ -85,22 +87,7 @@ public class ViewTweetActivity extends AppCompatActivity {
         }
 
         // TEST
-//        Cursor c = db.rawQuery("SELECT * FROM favorites", null);
-//        int idIndex = c.getColumnIndex("id");
-//        int contentIndex = c.getColumnIndex("content");
-//        int userDisplayNameIndex = c.getColumnIndex("userDisplayName");
-//        int userNameIndex = c.getColumnIndex("userName");
-//        int dateIndex = c.getColumnIndex("date");
-//        c.moveToFirst();
-//        while (c != null) {
-//            Log.i("id", String.valueOf(c.getLong(idIndex)));
-//            Log.i("content", c.getString(contentIndex));
-//            Log.i("userDisplayName", c.getString(userDisplayNameIndex));
-//            Log.i("userName", c.getString(userNameIndex));
-//            Log.i("date", c.getString(dateIndex));
-//            c.moveToNext();
-//        }
-//        c.close();
+        List<Tweet> tweets = dbHelper.getAllFavorites();
 
         // click listener for "View my Favorites" button
         viewMyFavorites.setOnClickListener(new View.OnClickListener() {
@@ -134,12 +121,7 @@ public class ViewTweetActivity extends AppCompatActivity {
                     }, 500);
                     SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.US);
                     // add Tweet to favorites data table
-                    db.execSQL("INSERT INTO favorites (id, content, userDisplayName, userName, date) VALUES " +
-                        "(" + tweet.getId() + ", " +
-                        "'" + tweet.getContent() + "', " +
-                        "'" + tweet.getUserDisplayName() + "', " +
-                        "'" + tweet.getUserName() + "', " +
-                        "'" + format.format(tweet.getDate()) + "')");
+                    dbHelper.addFavorite(tweet);
                     tweetFavorited = true;
                 } else {
                     favoriteButton.setImageResource(R.drawable.favorited_icon_empty);
@@ -165,7 +147,7 @@ public class ViewTweetActivity extends AppCompatActivity {
                         }
                     }, 500);
                     // delete Tweet from favorites data table
-                    db.execSQL("DELETE FROM favorites WHERE id = " + tweet.getId());
+                    dbHelper.removeFavorite(tweet);
                     tweetFavorited = false;
                 }
             }
@@ -196,20 +178,7 @@ public class ViewTweetActivity extends AppCompatActivity {
         }
         Tweet t = new Tweet(912422761318043650L,
             "<a href=\"https://twitter.com/hashtag/College?src=hash&amp;ref_src=twsrc%5Etfw\">#College</a> <a href=\"https://twitter.com/hashtag/Freshman?src=hash&amp;ref_src=twsrc%5Etfw\">#Freshman</a> Have you considered <a href=\"https://twitter.com/hashtag/studyabroad?src=hash&amp;ref_src=twsrc%5Etfw\">#studyabroad</a>? Here are 10 Reasons Everyone Should Study Abroad- <a href=\"https://t.co/n9B3drXg7Q\">https://t.co/n9B3drXg7Q</a>",
-            "MyPath101", "_MyPath101", date);
+            "MyPath101", "_MyPath101", "https://pbs.twimg.com/profile_images/505400940862513152/Bk-Fi5fo_200x200.jpeg", date);
         return t;
-    }
-
-    /**
-     * Queries favorites database to check if current Tweet is favorited by user
-     */
-    public static boolean tweetIsFavorited(SQLiteDatabase db, long id) {
-        Cursor c = db.rawQuery("SELECT * FROM favorites WHERE id = " + String.valueOf(id), null);
-        if(c.getCount() <= 0){
-            c.close();
-            return false;
-        }
-        c.close();
-        return true;
     }
 }

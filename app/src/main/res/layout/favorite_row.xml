@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/profilePic"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginRight="6dip"
+        android:src="@drawable/testprofimg"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="what up"
+            android:textColor="@color/searchTextColor"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/userDisplayName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="ScreenName"
+            android:textColor="#111"
+            android:gravity="end"
+            android:paddingEnd="20dp"
+            android:textSize="15sp"/>
+    </LinearLayout>
+
+</LinearLayout>
