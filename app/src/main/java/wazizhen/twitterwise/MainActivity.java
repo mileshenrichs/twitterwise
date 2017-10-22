@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     TextView titleTextView;
     EditText hashtagSearch;
     ImageButton searchButton;
+    ImageButton viewMyFavorites;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +27,16 @@ public class MainActivity extends AppCompatActivity {
 
         hashtagSearch = (EditText) findViewById(R.id.hashtagSearch);
         searchButton = (ImageButton) findViewById(R.id.searchButton);
+        viewMyFavorites = (ImageButton) findViewById(R.id.viewMyFavorites);
 
-
+        // click listener for "View my Favorites" button
+        viewMyFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, ListFavoritesActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // click listener for "Get Wise" button
         searchButton.setOnClickListener(new View.OnClickListener() {

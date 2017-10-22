@@ -1,5 +1,6 @@
 package wazizhen.twitterwise;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
@@ -33,6 +34,7 @@ public class ViewTweetActivity extends AppCompatActivity {
     TextView userDisplayName;
     TextView tweetDate;
     ImageButton favoriteButton;
+    ImageButton viewMyFavorites;
     TextView favoriteTweetText;
     ImageView profilePic;
 
@@ -64,6 +66,7 @@ public class ViewTweetActivity extends AppCompatActivity {
         tweetDate = (TextView) findViewById(R.id.tweetDate);
         tweetDate.setTypeface(signika);
         favoriteButton = (ImageButton) findViewById(R.id.favoriteButton);
+        viewMyFavorites = (ImageButton) findViewById(R.id.viewMyFavorites);
         favoriteTweetText = (TextView) findViewById(R.id.favoriteTweetText);
         favoriteTweetText.setTypeface(signika);
 
@@ -98,6 +101,15 @@ public class ViewTweetActivity extends AppCompatActivity {
 //            c.moveToNext();
 //        }
 //        c.close();
+
+        // click listener for "View my Favorites" button
+        viewMyFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewTweetActivity.this, ListFavoritesActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // Toggle favoriteButton src, change favoriteTweetText
         favoriteButton.setOnClickListener(new View.OnClickListener() {
