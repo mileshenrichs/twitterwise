@@ -104,9 +104,9 @@
         android:id="@+id/profilePic"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginBottom="160dp"
+        android:layout_marginBottom="170dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="40dp"
         app:layout_constraintLeft_toLeftOf="parent"/>
 
     <ImageButton

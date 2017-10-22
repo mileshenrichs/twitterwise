@@ -7,10 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import models.Tweet;
@@ -120,6 +120,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.endTransaction();
             Log.i("we good", "should be in database now");
         }
+    }
+
+    public Tweet getTweet(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM favorites WHERE id = " + id, null);
+        cursor.moveToFirst();
+
+        String content = cursor.getString(cursor.getColumnIndex(KEY_CONTENT));
+        String userDisplayName = cursor.getString(cursor.getColumnIndex(KEY_USER_DISPLAY_NAME));
+        String userName = cursor.getString(cursor.getColumnIndex(KEY_USER_NAME));
+        String profilePicUrl = cursor.getString(cursor.getColumnIndex(KEY_PROFILE_PIC_URL));
+        String dateStr = cursor.getString(cursor.getColumnIndex(KEY_DATE));
+        SimpleDateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.US);
+        Date date = new Date();
+        try {
+            date = format.parse(dateStr);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        cursor.close();
+        return new Tweet(id, content, userDisplayName, userName, profilePicUrl, date);
     }
 
     public ArrayList<Tweet> getAllFavorites() {

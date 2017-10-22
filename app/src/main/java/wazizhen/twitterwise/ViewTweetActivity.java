@@ -1,13 +1,10 @@
 package wazizhen.twitterwise;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -51,12 +48,15 @@ public class ViewTweetActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         String searchQuery = bundle.getString("query"); // hashtag user is has searched for
-        final Tweet tweet = findTweet(searchQuery); // get Tweet to display
-
-        // Picasso.with(getApplicationContext()).load(profileImgURL).into(profilePic);
+        String intentTweetId = bundle.getString("tweetId");
 
         // retrieve favorites database through helper
         dbHelper = DatabaseHelper.getInstance(this);
+
+        final Tweet tweet = findTweet(searchQuery, intentTweetId, dbHelper); // get Tweet to display
+
+        Picasso.with(getApplicationContext()).load(tweet.getProfilePicUrl()).into(profilePic);
+
 
         // establish view elements, set font
         Typeface signika = Typeface.createFromAsset(getAssets(), "fonts/SignikaNegative.ttf");
@@ -86,8 +86,14 @@ public class ViewTweetActivity extends AppCompatActivity {
             favoriteTweetText.setText(R.string.favorite_this);
         }
 
-        // TEST
-        List<Tweet> tweets = dbHelper.getAllFavorites();
+        // "View my Favorites" animation
+        viewMyFavorites.setTranslationY(-200f);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                viewMyFavorites.animate().translationYBy(200f).setDuration(1500);
+            }
+        }, 2500);
 
         // click listener for "View my Favorites" button
         viewMyFavorites.setOnClickListener(new View.OnClickListener() {
@@ -168,7 +174,11 @@ public class ViewTweetActivity extends AppCompatActivity {
 
     }
 
-    public static Tweet findTweet(String query) {
+    public static Tweet findTweet(String query, String tweetIdStr, DatabaseHelper dbHelper) {
+        if(tweetIdStr != null) {
+            long tweetId = Long.parseLong(tweetIdStr);
+            return dbHelper.getTweet(tweetId);
+        }
         SimpleDateFormat format = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
         Date date = new Date();
         try {
